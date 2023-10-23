@@ -75,8 +75,7 @@ class ChainlitTelemetry:
 
         exporter_logger.setLevel(logging.CRITICAL)
 
-        tracer = get_tracer("chainlit", __version__)
-        return tracer
+        return get_tracer("chainlit", __version__)
 
     @property
     def tracer(self) -> "Tracer":

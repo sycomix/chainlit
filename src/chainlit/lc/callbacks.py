@@ -162,15 +162,17 @@ class BaseLangchainCallbackHandler(BaseCallbackHandler):
         return last_prompt
 
     def get_author(self):
-        if self.sequence:
-            return self.sequence[-1].author
-        return config.ui.name
+        return self.sequence[-1].author if self.sequence else config.ui.name
 
     def get_last_message(self):
-        for message in reversed(self.sequence):
-            if message.author not in IGNORE_LIST:
-                return message
-        return self.root_message
+        return next(
+            (
+                message
+                for message in reversed(self.sequence)
+                if message.author not in IGNORE_LIST
+            ),
+            self.root_message,
+        )
 
     def create_error(self, error: Exception):
         if isinstance(error, InterruptedError):
@@ -282,8 +284,7 @@ class LangchainCallbackHandler(BaseLangchainCallbackHandler, BaseCallbackHandler
         self.add_message(message)
 
     def on_chain_end(self, outputs: Dict[str, Any], **kwargs: Any) -> None:
-        output_key = list(outputs.keys())[0]
-        if output_key:
+        if output_key := list(outputs.keys())[0]:
             prompt = self.consume_last_prompt()
             parent_id = self.get_last_message().parent_id
             message = self.create_message(
@@ -405,8 +406,7 @@ class AsyncLangchainCallbackHandler(BaseLangchainCallbackHandler, AsyncCallbackH
         await self.add_message(message)
 
     async def on_chain_end(self, outputs: Dict[str, Any], **kwargs: Any) -> None:
-        output_key = list(outputs.keys())[0]
-        if output_key:
+        if output_key := list(outputs.keys())[0]:
             prompt = self.consume_last_prompt()
             parent_id = self.get_last_message().parent_id
             message = self.create_message(

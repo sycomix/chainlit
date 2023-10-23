@@ -5,8 +5,7 @@ from chainlit.sync import make_async, run_sync
 
 async def async_function_from_sync():
     await cl.sleep(2)
-    emitter = get_emitter()
-    return emitter
+    return get_emitter()
 
 
 def sync_function():
@@ -16,14 +15,12 @@ def sync_function():
 
 
 async def async_function():
-    emitter = await another_async_function()
-    return emitter
+    return await another_async_function()
 
 
 async def another_async_function():
     await cl.sleep(2)
-    emitter = get_emitter()
-    return emitter
+    return get_emitter()
 
 
 @cl.on_chat_start

@@ -52,7 +52,7 @@ class Element:
             raise ValueError("Must provide url, path or content to instantiate element")
 
     def to_dict(self) -> ElementDict:
-        _dict = ElementDict(
+        return ElementDict(
             {
                 "id": self.id,
                 "type": self.type,
@@ -65,7 +65,6 @@ class Element:
                 "conversationId": None,
             }
         )
-        return _dict
 
     async def preprocess_content(self):
         pass

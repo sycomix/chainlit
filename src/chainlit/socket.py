@@ -20,8 +20,7 @@ from chainlit.user_session import user_sessions
 
 def load_chainlit_initial_headers(http_cookie):
     cookie = SimpleCookie(http_cookie)
-    cookie_string = cookie.get("chainlit-initial-headers").value
-    if cookie_string:
+    if cookie_string := cookie.get("chainlit-initial-headers").value:
         try:
             chainlit_initial_headers = json.loads(cookie_string)
         except ValueError:
@@ -44,19 +43,14 @@ def restore_existing_session(sid, session_id, emit_fn, ask_user_fn):
 
 
 def load_user_env(user_env):
-    # Check user env
     if config.project.user_env:
-        # Check if requested user environment variables are provided
-        if user_env:
-            user_env = json.loads(user_env)
-            for key in config.project.user_env:
-                if key not in user_env:
-                    trace_event("missing_user_env")
-                    raise ConnectionRefusedError(
-                        "Missing user environment variable: " + key
-                    )
-        else:
+        if not user_env:
             raise ConnectionRefusedError("Missing user environment variables")
+        user_env = json.loads(user_env)
+        for key in config.project.user_env:
+            if key not in user_env:
+                trace_event("missing_user_env")
+                raise ConnectionRefusedError(f"Missing user environment variable: {key}")
     return user_env
 
 
@@ -211,8 +205,7 @@ async def message(sid, message):
 
 
 async def process_action(action: Action):
-    callback = config.code.action_callbacks.get(action.name)
-    if callback:
+    if callback := config.code.action_callbacks.get(action.name):
         await callback(action)
     else:
         logger.warning("No callback found for action %s", action.name)

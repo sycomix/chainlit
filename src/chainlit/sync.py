@@ -24,7 +24,6 @@ T = TypeVar("T")
 def run_sync(co: Coroutine[Any, Any, T_Retval]) -> T_Retval:
     if threading.current_thread() == threading.main_thread():
         return sync(co)
-    else:
-        loop = get_loop()
-        result = asyncio.run_coroutine_threadsafe(co, loop=loop)
-        return result.result()
+    loop = get_loop()
+    result = asyncio.run_coroutine_threadsafe(co, loop=loop)
+    return result.result()

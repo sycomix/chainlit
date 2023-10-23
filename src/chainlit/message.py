@@ -171,7 +171,7 @@ class Message(MessageBase):
         super().__post_init__()
 
     @classmethod
-    def from_dict(self, _dict: MessageDict):
+    def from_dict(cls, _dict: MessageDict):
         message = Message(
             content=_dict["content"],
             author=_dict.get("author", config.ui.name),
@@ -347,9 +347,7 @@ class AskUserMessage(AskMessageBase):
 
         spec = AskSpec(type="text", timeout=self.timeout)
 
-        res = await self.emitter.send_ask_user(msg_dict, spec, self.raise_on_timeout)
-
-        return res
+        return await self.emitter.send_ask_user(msg_dict, spec, self.raise_on_timeout)
 
 
 class AskFileMessage(AskMessageBase):
@@ -418,7 +416,4 @@ class AskFileMessage(AskMessageBase):
 
         res = await self.emitter.send_ask_user(msg_dict, spec, self.raise_on_timeout)
 
-        if res:
-            return [AskFileResponse(**r) for r in res]
-        else:
-            return None
+        return [AskFileResponse(**r) for r in res] if res else None

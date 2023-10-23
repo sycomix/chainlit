@@ -45,35 +45,32 @@ async def get_db_client(
 ) -> BaseDBClient:
     # Create the database client
     if config.project.database == "cloud":
-        if not config.project.id:
+        if config.project.id:
+            return CloudDBClient(
+                project_id=config.project.id,
+                handshake_headers=handshake_headers,
+                request_headers=request_headers,
+            )
+        else:
             raise ValueError("Project id is required for database mode 'cloud'")
 
-        return CloudDBClient(
-            project_id=config.project.id,
-            handshake_headers=handshake_headers,
-            request_headers=request_headers,
-        )
-    elif config.project.database == "local":
-        return LocalDBClient(user_infos=user_infos)
     elif config.project.database == "custom":
-        if not config.code.db_client_factory:
+        if config.code.db_client_factory:
+            return await config.code.db_client_factory(
+                handshake_headers, request_headers, user_infos
+            )
+        else:
             raise ValueError("Db client factory not provided")
 
-        custom_db_client = await config.code.db_client_factory(
-            handshake_headers, request_headers, user_infos
-        )
-        return custom_db_client
-
+    elif config.project.database == "local":
+        return LocalDBClient(user_infos=user_infos)
     raise ValueError("Unknown database type")
 
 
 async def get_auth_client_from_request(
     request: Request,
 ) -> BaseAuthClient:
-    # Get the auth client
-    auth_client = await get_auth_client(None, request.headers)
-
-    return auth_client
+    return await get_auth_client(None, request.headers)
 
 
 async def get_db_client_from_request(
@@ -82,7 +79,4 @@ async def get_db_client_from_request(
     # Get the auth client
     auth_client = await get_auth_client(None, request.headers)
 
-    # Get the db client
-    db_client = await get_db_client(None, request.headers, auth_client.user_infos)
-
-    return db_client
+    return await get_db_client(None, request.headers, auth_client.user_infos)

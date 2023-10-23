@@ -128,11 +128,7 @@ class LocalDBClient(BaseDBClient):
         if filter.search is not None:
             some_messages["content"] = {"contains": filter.search or None}
 
-        if pagination.cursor:
-            cursor = {"id": pagination.cursor}
-        else:
-            cursor = None
-
+        cursor = {"id": pagination.cursor} if pagination.cursor else None
         conversations = await Conversation.prisma().find_many(
             take=pagination.first,
             skip=1 if pagination.cursor else None,
@@ -159,11 +155,7 @@ class LocalDBClient(BaseDBClient):
 
         has_more = len(conversations) == pagination.first
 
-        if has_more:
-            end_cursor = conversations[-1].id
-        else:
-            end_cursor = None
-
+        end_cursor = conversations[-1].id if has_more else None
         conversations = [json.loads(c.json()) for c in conversations]
 
         return PaginatedResponse(
@@ -287,8 +279,7 @@ class LocalDBClient(BaseDBClient):
             await out.write(content)
             await out.flush()
 
-            url = f"/files/{sub_path}"
-            return url
+            return f"/files/{sub_path}"
 
     async def set_human_feedback(self, message_id, feedback):
         from prisma.models import Message

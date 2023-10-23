@@ -300,12 +300,9 @@ class CloudDBClient(BaseDBClient, GraphQLClient):
         res = await self.query(query, variables)
         self.check_for_errors(res, raise_error=True)
 
-        conversations = []
-
-        for edge in res["data"]["conversations"]["edges"]:
-            node = edge["node"]
-            conversations.append(node)
-
+        conversations = [
+            edge["node"] for edge in res["data"]["conversations"]["edges"]
+        ]
         page_info = res["data"]["conversations"]["pageInfo"]
 
         return PaginatedResponse(
@@ -476,7 +473,7 @@ class CloudDBClient(BaseDBClient, GraphQLClient):
         id = str(uuid.uuid4())
         body = {"projectId": self.project_id, "fileName": id, "contentType": mime}
 
-        path = f"/api/upload/file"
+        path = "/api/upload/file"
 
         async with aiohttp.ClientSession() as session:
             async with session.post(

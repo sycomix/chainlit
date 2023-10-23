@@ -64,8 +64,7 @@ class LlamaIndexCallbackHandler(BaseCallbackHandler):
         parent_id = self.root_message.id if self.root_message else None
 
         if event_type == CBEventType.RETRIEVE:
-            sources = payload.get(EventPayload.NODES)
-            if sources:
+            if sources := payload.get(EventPayload.NODES):
                 elements = [
                     Text(name=f"Source {idx}", content=source.node.get_text())
                     for idx, source in enumerate(sources)

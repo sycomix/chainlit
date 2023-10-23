@@ -104,10 +104,6 @@ class ChainlitEmitter:
                 # If cloud is enabled, store the response in the database/S3
                 if spec.type == "text":
                     await self.process_user_message(res)
-                elif spec.type == "file":
-                    # TODO: upload file to S3
-                    pass
-
             await self.clear_ask()
             return res
         except TimeoutError as e:

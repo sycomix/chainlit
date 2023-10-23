@@ -50,9 +50,7 @@ if LLAMA_INDEX_INSTALLED:
 if HAYSTACK_INSTALLED:
     from chainlit.haystack.callbacks import HaystackAgentCallbackHandler
 
-env_found = load_dotenv(dotenv_path=os.path.join(os.getcwd(), ".env"))
-
-if env_found:
+if env_found := load_dotenv(dotenv_path=os.path.join(os.getcwd(), ".env")):
     logger.info("Loaded .env file")
 
 

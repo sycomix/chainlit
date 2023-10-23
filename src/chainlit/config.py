@@ -308,14 +308,12 @@ def load_config():
 
     settings = load_settings()
 
-    config = ChainlitConfig(
+    return ChainlitConfig(
         chainlit_server=chainlit_server,
         chainlit_prod_url=chainlit_prod_url,
         run=RunSettings(),
         **settings,
     )
-
-    return config
 
 
 config = load_config()
